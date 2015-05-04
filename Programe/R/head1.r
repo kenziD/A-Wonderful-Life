@@ -1,0 +1,23 @@
+setwd('D:/Postgraduate/Course/2-semester/R-language/TimeAnalyze/Programe')
+time=read.csv('source/origin_data.csv')
+T =time[,c(-4,-5)]
+end = strptime(T[,3], format="%Y年%m月%d日 %A %H:%M")
+start = strptime(T[,2], format="%Y年%m月%d日 %A %H:%M")
+last=end-start
+week = weekdays(end)
+T[,2] = as.character(start)
+T[,3] = as.character(end)
+colnames(T) = c('Project','StartTime','Endtime')
+T = cbind(T,last)
+D = as.Date(T[,2], "%Y-%m-%d")
+T = cbind(T,D)
+T= cbind(T,week)
+
+day1_set = as.character(read.table('temp/date1.txt')[1,])
+day1_num = grep(day1_set,T[,'D'])
+f1= factor(T[c(day1_num),'Project'])
+type1 =aggregate(T[c(day1_num),'last'],list(f1),sum)
+day1 = rep(c(day1_set),nrow(type1))
+frame1 = data.frame(day1,type1)
+colnames(frame1) = c('day','project','time')
+write.csv (x = frame1,file = "temp/day1.csv")
